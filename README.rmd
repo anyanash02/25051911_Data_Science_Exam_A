@@ -1,0 +1,183 @@
+---
+title: "Data Science 871 Part A Practical Exam"
+author: "Anya Nash - 25051911"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+output:
+  md_document:
+    variant: markdown_github
+---
+
+# Data Science Part A Practical Exam
+
+**Author:** Anya Nash  
+**Student number:** 25051911  
+**Date:** `r format(Sys.Date(), "%d %B %Y")`
+
+---
+
+## Purpose and Structure
+
+The purpose of this README document is to explain my reasoning and process for answering each question (and sub question) in the Data Science 871 Part A Practical Exam. The raw data from the 'PracData26Folder' is stored in the Project's main data folder, while any intermediary, cleaned or question-specific sub sample data is stored in each question's data folder. General code is stored in the Project's main code folder and any question-specific code is stored in each question's code folder. The relevant output for each question, such as PowerPoints, pdfs, etc. is stored in each question's folder.
+
+
+### Getting Started
+
+I used the following code to create my project and folder structures:
+
+```{r, eval = F}
+
+library(tidyverse)
+library(Texevier)
+
+student_number <- "25051911"
+
+base_dir <- "C:/Users/anyan/OneDrive/Desktop/Data Science_Random Notes"
+
+exam_dir <- file.path(base_dir, student_number)
+
+dir.create(exam_dir, recursive = TRUE, showWarnings = FALSE)
+
+writeLines(
+  c(
+    "Version: 1.0",
+    "",
+    "RestoreWorkspace: Default",
+    "SaveWorkspace: Default",
+    "AlwaysSaveHistory: Default",
+    "",
+    "EnableCodeIndexing: Yes",
+    "UseSpacesForTab: Yes",
+    "NumSpacesForTab: 2",
+    "Encoding: UTF-8",
+    "",
+    "RnwWeave: Sweave",
+    "LaTeX: pdfLaTeX"
+  ),
+  file.path(exam_dir, paste0(student_number, ".Rproj"))
+)
+
+# Main folders
+dir.create(file.path(exam_dir, "data"), showWarnings = FALSE)
+dir.create(file.path(exam_dir, "code"), showWarnings = FALSE)
+
+# Git ignore: data should not be committed
+writeLines(
+  c(
+    "data/",
+    "*.Rhistory",
+    "*.RData",
+    ".Rproj.user/"
+  ),
+  file.path(exam_dir, ".gitignore")
+)
+
+# Create a blank main README file
+file.create(file.path(exam_dir, "README.rmd"))
+
+# Create a blank main README file
+file.create(file.path(exam_dir, "README.rmd"))
+
+old_question_folders <- file.path(
+  exam_dir,
+  c("q1_happiness", "q2_wine", "q3_movies", "q4_tennis")
+)
+
+unlink(old_question_folders, recursive = TRUE, force = TRUE)
+
+questions <- tibble::tribble(
+  ~short_name,
+  "Question_1",
+  "Question_2",
+  "Question_3",
+  "Question_4",
+)
+
+purrr::walk(
+  questions$short_name,
+  function(short_name) {
+    
+    template_name_clean <- paste(student_number, short_name, sep = "_")
+    
+    Texevier::create_template(
+      directory     = exam_dir,
+      template_name = template_name_clean,
+      build_project = FALSE,
+      open_project  = FALSE
+    )
+  }
+)
+
+```
+
+
+## Question 1: Coffee Hub
+
+A budding coffee entrepreneur looking to stock her shop in the Neelsie with premium coffees has asked for my insight into what might work locally. I am supplied with a database of coffee roasters, expert reviews, cost in USD and ratings points of coffees. I have also been provided with some key words describing students' favourite local coffees: sweet, chocolate, aroma, finish, cup, structure, toned, mouthfeel, etc.
+
+I have been asked to provide graphs/ tables showing what is available from suppliers, focusing on type of coffee, region and suppliers she should consider.
+
+There are a number of different ways that I can approach this:
+Individual Names
+1. Cheapest coffee available
+2. Highest ranking coffee available
+3. Best price-ranking combination
+4. Best price-ranking combination from Africa
+
+5. Best price-ranking combination including a variety of roasts
+
+
+4. Best price-ranking combination including a variety of roasts from the same loc_country
+4. Best price-ranking combination including a variety of roasts from the same roaster
+
+1. Cheapest coffee available & descriptive words
+2. Highest ranking coffee available & descriptive words
+3. Best price-ranking combination & descriptive words
+4. Best price-ranking combination including a variety of roasts & descriptive words
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -6,7 +6,7 @@ library(tidyverse)
 library(Texevier)
 
 # Replace with your actual student number
-student_number <- "25051911"
+student_number <- "911"
 
 # Choose where the whole exam project should live
 base_dir <- "C:/Users/anyan/OneDrive/Desktop/Data Science_Random Notes"
@@ -53,14 +53,14 @@ writeLines(
 )
 
 # Create a blank main README file
-file.create(file.path(exam_dir, "README.md"))
+file.create(file.path(exam_dir, "README.rmd"))
 
 # ============================================================
 # Question-specific Texevier templates
 # ============================================================
 
 # Create a blank main README file
-file.create(file.path(exam_dir, "README.md"))
+file.create(file.path(exam_dir, "README.rmd"))
 
 # Remove old extra question folders, if they exist
 old_question_folders <- file.path(
