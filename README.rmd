@@ -30,6 +30,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width 
 library(tidyverse)
 library(here)
 library(flextable)
+library(knitr)
 
 ```
 
@@ -180,16 +181,13 @@ It took SO many trials and errors to eventually get the layout somewhat acceptab
 Roasters_Per_Roast_Table(df_clean) %>%
   rename(
     `Roast` = roast,
-    `No_of_Roasters` = Number_of_roasters
+    `No. of Roasters` = Number_of_roasters
   ) %>%
-  flextable() %>%
-  theme_vanilla() %>%
-  bg(part = "header", bg = "#61223b") %>%
-  color(part = "header", color = "white") %>%
-  fontsize(size = 14, part = "all") %>%
-  autofit() %>%
-  fit_to_width(max_width = 10.8) %>% 
-  set_table_properties(align = "center")
+  kable(
+    format = "pipe",
+    caption = "Number of roasters per roast type",
+    align = "lc"
+  )
 ```
 
 #### Cost and Rating of Coffee Roasts
@@ -220,70 +218,55 @@ There are a number of different ways that I can approach this:
 
 ```{r}
 Coffee_Table_By_Roast(df_clean, Choice = "cheapest") %>%
-  flextable() %>%
-  theme_vanilla() %>%
-  bg(part = "header", bg = "#61223b") %>%
-  color(part = "header", color = "white") %>%
-  fontsize(size = 14, part = "all") %>%
-  autofit() %>%
-  fit_to_width(max_width = 8) %>% 
-  set_table_properties(align = "center")
+  mutate(across(where(is.numeric), ~ round(.x, 2))) %>%
+  kable(
+    format = "pipe",
+    caption = "Cheapest coffee option by roast type"
+  )
 ```
 
 #### Highest Rated Roast by Roast Type
 
 ```{r}
 Coffee_Table_By_Roast(df_clean, Choice = "highest_rating") %>%
-  flextable() %>%
-  theme_vanilla() %>%
-  bg(part = "header", bg = "#61223b") %>%
-  color(part = "header", color = "white") %>%
-  fontsize(size = 14, part = "all") %>%
-  autofit() %>%
-  fit_to_width(max_width = 8) %>% 
-  set_table_properties(align = "center")
+  mutate(across(where(is.numeric), ~ round(.x, 2))) %>%
+  kable(
+    format = "pipe",
+    caption = "Highest-rated coffee option by roast type"
+  )
 ```
 
 #### Best Valued Roast by Roast Type
 
 ```{r}
 Coffee_Table_By_Roast(df_clean, Choice = "best_value") %>%
-  flextable() %>%
-  theme_vanilla() %>%
-  bg(part = "header", bg = "#61223b") %>%
-  color(part = "header", color = "white") %>%
-  fontsize(size = 14, part = "all") %>%
-  autofit() %>%
-  fit_to_width(max_width = 8) %>% 
-  set_table_properties(align = "center")
+  mutate(across(where(is.numeric), ~ round(.x, 2))) %>%
+  kable(
+    format = "pipe",
+    caption = "Best-value coffee option by roast type"
+  )
 ```
 
 #### Best Valued Combination for Each Three-Roast Combination
 
 ```{r}
 Coffee_Table_Three_Roast_Combos(df_clean, top_n_per_roast = 10) %>%
-  flextable() %>%
-  theme_vanilla() %>%
-  bg(part = "header", bg = "#61223b") %>%
-  color(part = "header", color = "white") %>%
-  fontsize(size = 14, part = "all") %>%
-  autofit() %>%
-  fit_to_width(max_width = 8)%>% 
-  set_table_properties(align = "center")
+  mutate(across(where(is.numeric), ~ round(.x, 2))) %>%
+  kable(
+    format = "pipe",
+    caption = "Recommended three-roast coffee combinations"
+  )
 ```
 
 #### Best Valued Combination for Each Same-Country Three-Roast Combination
 
 ```{r}
   Coffee_Table_Three_Roast_Combos_Same_Country(df_clean) %>%
-  flextable() %>%
-  theme_vanilla() %>%
-  bg(part = "header", bg = "#61223b") %>%
-  color(part = "header", color = "white") %>%
-  fontsize(size = 14, part = "all") %>%
-  autofit() %>%
-  fit_to_width(max_width = 8) %>% 
-  set_table_properties(align = "center")
+  mutate(across(where(is.numeric), ~ round(.x, 2))) %>%
+  kable(
+    format = "pipe",
+    caption = "Recommended three-roast coffee combination from the same country"
+  )
 ```
 
 ### Recommendations
