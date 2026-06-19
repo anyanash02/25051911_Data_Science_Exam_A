@@ -2,6 +2,15 @@ Cost_Rating_Scatter <- function(df, Title, Subtitle) {
   
   library(tidyverse)
   
+  # Stellenbosch-inspired colours
+  su_roast_cols <- c(
+    "Light"        = "#CAA258",  # gold
+    "Medium-Light" = "#82CCAE",  # green
+    "Medium"       = "#DC4405",  # orange
+    "Medium-Dark"  = "#A60A3D",  # wine red
+    "Dark"         = "#61223B"   # maroon
+  )
+  
   g <-
     df %>%
     filter(!is.na(Cost_Per_100g),
@@ -16,7 +25,7 @@ Cost_Rating_Scatter <- function(df, Title, Subtitle) {
       alpha = 0.7
     ) +
     theme_bw() +
-    scale_color_brewer(palette = "Dark2") +
+    scale_color_manual(values = su_roast_cols) +
     labs(
       title = Title,
       subtitle = Subtitle,

@@ -47,10 +47,9 @@ Coffee_Table_By_Roast <- function(df_clean, Choice = "cheapest") {
       roast,
       Cost_Per_100g,
       Rating,
+      Value_Score,
       name,
-      roaster,
-      loc_country,
-      Value_Score
+      roaster
     ) %>%
     arrange(roast) %>% 
     rename(
@@ -58,7 +57,6 @@ Coffee_Table_By_Roast <- function(df_clean, Choice = "cheapest") {
       `Cost` = Cost_Per_100g,
       `Name` = name,
       `Roaster` = roaster,
-      `Country` = loc_country,
       `Value` = Value_Score
     )
   

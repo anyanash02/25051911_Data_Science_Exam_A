@@ -1,11 +1,8 @@
 ---
-title: "Coffee"
+title: "Coffee Supply Analysis"
 author: "Anya Nash"
 date: "`r Sys.Date()`"
-output:
-  officedown::rpptx_document:
-    layout: "Title and Content"
-    master: "Office Theme"
+output: powerpoint_presentation
 ---
 
 
@@ -16,7 +13,6 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width 
 library(tidyverse)
 library(here)
 library(flextable)
-library(officedown)
 
 ```
 
@@ -31,28 +27,51 @@ head(df_clean)
 ```
 
 
-# Average Cost Per 100g by Roast Type
+## 
+```{r, echo=FALSE, fig.width=10, fig.height=5.6, out.width="100%"}
+library(ggplot2)
+
+ggplot() +
+  annotate("text",
+           x = 0.5,
+           y = 0.57,
+           label = "Some Summary Statistics",
+           size = 16,
+           fontface = "bold",
+           colour = "#61223B") +
+  annotate("text",
+           x = 0.5,
+           y = 0.43,
+           label = "A brief overview",
+           size = 10,
+           colour = "grey35") +
+  xlim(0, 1) +
+  ylim(0, 1) +
+  theme_void()
+```
+
+## Average Cost Per 100g by Roast Type
 
 ```{r, fig.width=12, fig.height=6, out.width="100%"}
 # Average price by roast
 Average_Barplot(df_clean, Metric = "Cost_Per_100g", Group = "roast")
 ```
 
-# Average Rating by Roast Type
+## Average Rating by Roast Type
 
 ```{r, fig.width=12, fig.height=6, out.width="100%"}
 # Average rating by roast
 Average_Barplot(df_clean, Metric = "rating", Group = "roast")
 ```
 
-# Average Cost Per 100g by Country
+## Average Cost Per 100g by Country
 
 ```{r, fig.width=12, fig.height=6, out.width="100%"}
 # Average cost by country
 Average_Barplot(df_clean, Metric = "Cost_Per_100g", Group = "loc_country")
 ```
 
-# Average Rating by Country
+## Average Rating by Country
 
 ```{r, fig.width=12, fig.height=6, out.width="100%"}
 # Average rating by country
@@ -60,9 +79,9 @@ Average_Barplot(df_clean, Metric = "rating", Group = "loc_country")
 ```
 
 
-# Number of Roasters by Roast Type
+## Number of Roasters by Roast Type
 
-```{r, echo=FALSE, ph = officer::ph_location(left = 0, width = 10.8)}
+```{r, echo=FALSE}
 Roasters_Per_Roast_Table(df_clean) %>%
   rename(
     `Roast` = roast,
@@ -70,15 +89,16 @@ Roasters_Per_Roast_Table(df_clean) %>%
   ) %>%
   flextable() %>%
   theme_vanilla() %>%
-  bg(part = "header", bg = "#4D0E31") %>%
+  bg(part = "header", bg = "#61223b") %>%
   color(part = "header", color = "white") %>%
   fontsize(size = 14, part = "all") %>%
   autofit() %>%
-  fit_to_width(max_width = 10.8)
+  fit_to_width(max_width = 10.8) %>% 
+  set_table_properties(align = "center")
 ```
 
 
-# Cost and Rating of Coffee Roasts
+## Cost and Rating of Coffee Roasts
 
 ```{r, fig.width=12, fig.height=6, out.width="100%"}
 Cost_Rating_Scatter(
@@ -89,87 +109,152 @@ Cost_Rating_Scatter(
 
 ```
 
+## 
+```{r, echo=FALSE, fig.width=10, fig.height=5.6, out.width="100%"}
+library(ggplot2)
+
+ggplot() +
+  annotate("text",
+           x = 0.5,
+           y = 0.57,
+           label = "Which Are the Best Coffees?",
+           size = 16,
+           fontface = "bold",
+           colour = "#61223B") +
+  annotate("text",
+           x = 0.5,
+           y = 0.43,
+           label = "Identifying the best coffees using various methods",
+           size = 10,
+           colour = "grey35") +
+  xlim(0, 1) +
+  ylim(0, 1) +
+  theme_void()
+```
 
 
-# Cheapest Roast by Roast Type
+## Cheapest Roast by Roast Type
 
-```{r, echo=FALSE, ph = officer::ph_location(left = 0, width = 10.8)}
+```{r, echo=FALSE}
 Coffee_Table_By_Roast(df_clean, Choice = "cheapest") %>%
   flextable() %>%
   theme_vanilla() %>%
-  bg(part = "header", bg = "#4D0E31") %>%
+  bg(part = "header", bg = "#61223b") %>%
   color(part = "header", color = "white") %>%
   fontsize(size = 14, part = "all") %>%
   autofit() %>%
-  fit_to_width(max_width = 10.8)
+  fit_to_width(max_width = 8) %>% 
+  set_table_properties(align = "center")
 ```
 
-# Highest Rated Roast by Roast Type
+## Highest Rated Roast by Roast Type
 
-```{r, echo=FALSE, ph = officer::ph_location(left = 0, width = 10.8)}
+```{r, echo=FALSE}
 Coffee_Table_By_Roast(df_clean, Choice = "highest_rating") %>%
   flextable() %>%
   theme_vanilla() %>%
-  bg(part = "header", bg = "#4D0E31") %>%
+  bg(part = "header", bg = "#61223b") %>%
   color(part = "header", color = "white") %>%
   fontsize(size = 14, part = "all") %>%
   autofit() %>%
-  fit_to_width(max_width = 10.8)
+  fit_to_width(max_width = 8) %>% 
+  set_table_properties(align = "center")
 ```
 
 
-# Best Valued Roast by Roast Type
+## Best Valued Roast by Roast Type
 
-```{r, echo=FALSE, ph = officer::ph_location(left = 0, width = 10.8)}
+```{r, echo=FALSE}
 Coffee_Table_By_Roast(df_clean, Choice = "best_value") %>%
   flextable() %>%
   theme_vanilla() %>%
-  bg(part = "header", bg = "#4D0E31") %>%
+  bg(part = "header", bg = "#61223b") %>%
   color(part = "header", color = "white") %>%
   fontsize(size = 14, part = "all") %>%
   autofit() %>%
-  fit_to_width(max_width = 10.8)
+  fit_to_width(max_width = 8) %>% 
+  set_table_properties(align = "center")
 ```
 
 
-# Best Valued Roast by Roast Type in Africa
-
-```{r, echo=FALSE, ph = officer::ph_location(left = 0, width = 10.8)}
-Coffee_Table_By_Roast(df_clean, Choice = "Africa_best_value") %>%
-  flextable() %>%
-  theme_vanilla() %>%
-  bg(part = "header", bg = "#4D0E31") %>%
-  color(part = "header", color = "white") %>%
-  fontsize(size = 14, part = "all") %>%
-  autofit() %>%
-  fit_to_width(max_width = 10.8)
-```
-
-# Best Valued Combination for Each Three-Roast Combination
+## Best Valued Combination for Each Three-Roast Combination
 
 ```{r, echo=FALSE, ph = officer::ph_location(left = 0, width = 10.8)}
 Coffee_Table_Three_Roast_Combos(df_clean, top_n_per_roast = 10) %>%
   flextable() %>%
   theme_vanilla() %>%
-  bg(part = "header", bg = "#4D0E31") %>%
+  bg(part = "header", bg = "#61223b") %>%
   color(part = "header", color = "white") %>%
   fontsize(size = 14, part = "all") %>%
   autofit() %>%
-  fit_to_width(max_width = 10.8)
+  fit_to_width(max_width = 8)%>% 
+  set_table_properties(align = "center")
 
 ```
 
 
-# Best Valued Combination for Each Same-Country Three-Roast Combination
+## Best Valued Combination for Each Same-Country Three-Roast Combination
 
 ```{r, echo=FALSE, ph = officer::ph_location(left = 0, width = 10.8)}
   Coffee_Table_Three_Roast_Combos_Same_Country(df_clean) %>%
   flextable() %>%
   theme_vanilla() %>%
-  bg(part = "header", bg = "#4D0E31") %>%
+  bg(part = "header", bg = "#61223b") %>%
   color(part = "header", color = "white") %>%
   fontsize(size = 14, part = "all") %>%
   autofit() %>%
-  fit_to_width(max_width = 10.8)
+  fit_to_width(max_width = 8) %>% 
+  set_table_properties(align = "center")
 ```
+
+## 
+```{r, echo=FALSE, fig.width=10, fig.height=5.6, out.width="100%"}
+library(ggplot2)
+
+ggplot() +
+  annotate("text",
+           x = 0.5,
+           y = 0.57,
+           label = "Recommendations",
+           size = 16,
+           fontface = "bold",
+           colour = "#61223B") +
+  annotate("text",
+           x = 0.5,
+           y = 0.43,
+           label = "Best coffees to stock",
+           size = 10,
+           colour = "grey35") +
+  xlim(0, 1) +
+  ylim(0, 1) +
+  theme_void()
+```
+
+## Recommendation 1
+
+If just one type of coffee is to be stocked, I would recommend this coffee:
+
+- Medium-Light roast: Karen J Kona Red Bourbon, roasted by Hula Daddy Kona Coffee
+- It has the best value for money
+- It is both inexpensive and highly rated
+
+## Recommendation 2
+
+If the goal is to supply a range of coffee roasts, I would recommend the following combination:
+
+- A medium roast: Espresso Blend
+- A medium-dark roast: 100% Guatemalan
+- And a medium-light roast: Karen J Kona Red Bourbon
+
+## Recommendation 3
+
+If the goal is to supply a range of coffee roasts and there is an advantage from importing them all from the same country, I would recommend the following roasts from Hawai'i:
+
+- Light roast: Ethiopia Yirgacheffe G1
+- Medium roast: Medium-Dark Roast
+- And medium-light roast: Karen J Kona Red Bourbon
+
+
+
+
 

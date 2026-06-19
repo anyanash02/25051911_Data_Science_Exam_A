@@ -22,6 +22,16 @@ The purpose of this README document is to explain my reasoning and process for a
 
 ### Getting Started
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 5, fig.pos="H", fig.pos = 'H')
+
+# loading necessary libraries
+library(tidyverse)
+library(here)
+library(flextable)
+
+```
+
 I used the following code to create my project and folder structures:
 
 ```{r, eval = F}
@@ -112,34 +122,669 @@ purrr::walk(
 
 ## Question 1: Coffee Hub
 
-A budding coffee entrepreneur looking to stock her shop in the Neelsie with premium coffees has asked for my insight into what might work locally. I am supplied with a database of coffee roasters, expert reviews, cost in USD and ratings points of coffees. I have also been provided with some key words describing students' favourite local coffees: sweet, chocolate, aroma, finish, cup, structure, toned, mouthfeel, etc.
+I used an R Markdown file to create my PowerPoint presentation. I struggled a bit initially with the formatting, but AI helped me with some of the finer syntax details.
 
-I have been asked to provide graphs/ tables showing what is available from suppliers, focusing on type of coffee, region and suppliers she should consider.
+```{r}
+# loading/ listing all the functions used and loading the data
+list.files('25051911_Question_1/code/', full.names = T, recursive = T) %>% as.list() %>% walk(~source(.))
 
+df_clean <- Data_Loading(Datroot = here("data", "Coffee", "Coffee.csv"))
+head(df_clean)
+```
+
+### Summary Statistics
+
+I start with reporting some summary statistics: 
+
+- Average cost per 100g by roast type
+- Average rating by roast type
+- Average cost per 100g by country
+- Average rating by country
+- Number of roasters by roast type
+- Cost and rating of coffee roasts
+
+
+#### Average Cost Per 100g by Roast Type
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+# Average price by roast
+Average_Barplot(df_clean, Metric = "Cost_Per_100g", Group = "roast")
+```
+
+#### Average Rating by Roast Type
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+# Average rating by roast
+Average_Barplot(df_clean, Metric = "rating", Group = "roast")
+```
+
+#### Average Cost Per 100g by Country
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+# Average cost by country
+Average_Barplot(df_clean, Metric = "Cost_Per_100g", Group = "loc_country")
+```
+
+#### Average Rating by Country
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+# Average rating by country
+Average_Barplot(df_clean, Metric = "rating", Group = "loc_country")
+```
+
+#### Number of Roasters by Roast Type
+It took SO many trials and errors to eventually get the layout somewhat acceptable for a slide (then I had some fun with the colours).
+
+```{r}
+Roasters_Per_Roast_Table(df_clean) %>%
+  rename(
+    `Roast` = roast,
+    `No_of_Roasters` = Number_of_roasters
+  ) %>%
+  flextable() %>%
+  theme_vanilla() %>%
+  bg(part = "header", bg = "#61223b") %>%
+  color(part = "header", color = "white") %>%
+  fontsize(size = 14, part = "all") %>%
+  autofit() %>%
+  fit_to_width(max_width = 10.8) %>% 
+  set_table_properties(align = "center")
+```
+
+#### Cost and Rating of Coffee Roasts
+I thought this scatter plot would be more informative than it actually is, but it showed some interesting information regaarding the range/ spread of rating and cost.
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+Cost_Rating_Scatter(
+  df = df_clean,
+  Title = "Cost and Rating of Coffee Roasts",
+  Subtitle = "Each point represents a coffee, coloured by roast category"
+)
+```
+
+
+### Identifying the best coffee
+Again, it took a while to eventually get the tables to fit on the slides (and I still never managed to get them to centre properly on the slides).
+
+I then start identifying the best coffees using various methods.
 There are a number of different ways that I can approach this:
-Individual Names
+
 1. Cheapest coffee available
 2. Highest ranking coffee available
-3. Best price-ranking combination
-4. Best price-ranking combination from Africa
+3. Best price-ranking combination (best value)
+4. Best price-ranking (value) combination of three different types of roasts
+5. Best price-ranking (value) combination of three different types of roasts, where all the roasts are from the same country (in case there are advantages to getting all three roasts from the same country - import/ bulk ordering benefits??)
 
-5. Best price-ranking combination including a variety of roasts
+#### Cheapest Roast by Roast Type
+
+```{r}
+Coffee_Table_By_Roast(df_clean, Choice = "cheapest") %>%
+  flextable() %>%
+  theme_vanilla() %>%
+  bg(part = "header", bg = "#61223b") %>%
+  color(part = "header", color = "white") %>%
+  fontsize(size = 14, part = "all") %>%
+  autofit() %>%
+  fit_to_width(max_width = 8) %>% 
+  set_table_properties(align = "center")
+```
+
+#### Highest Rated Roast by Roast Type
+
+```{r}
+Coffee_Table_By_Roast(df_clean, Choice = "highest_rating") %>%
+  flextable() %>%
+  theme_vanilla() %>%
+  bg(part = "header", bg = "#61223b") %>%
+  color(part = "header", color = "white") %>%
+  fontsize(size = 14, part = "all") %>%
+  autofit() %>%
+  fit_to_width(max_width = 8) %>% 
+  set_table_properties(align = "center")
+```
+
+#### Best Valued Roast by Roast Type
+
+```{r}
+Coffee_Table_By_Roast(df_clean, Choice = "best_value") %>%
+  flextable() %>%
+  theme_vanilla() %>%
+  bg(part = "header", bg = "#61223b") %>%
+  color(part = "header", color = "white") %>%
+  fontsize(size = 14, part = "all") %>%
+  autofit() %>%
+  fit_to_width(max_width = 8) %>% 
+  set_table_properties(align = "center")
+```
+
+#### Best Valued Combination for Each Three-Roast Combination
+
+```{r}
+Coffee_Table_Three_Roast_Combos(df_clean, top_n_per_roast = 10) %>%
+  flextable() %>%
+  theme_vanilla() %>%
+  bg(part = "header", bg = "#61223b") %>%
+  color(part = "header", color = "white") %>%
+  fontsize(size = 14, part = "all") %>%
+  autofit() %>%
+  fit_to_width(max_width = 8)%>% 
+  set_table_properties(align = "center")
+```
+
+#### Best Valued Combination for Each Same-Country Three-Roast Combination
+
+```{r}
+  Coffee_Table_Three_Roast_Combos_Same_Country(df_clean) %>%
+  flextable() %>%
+  theme_vanilla() %>%
+  bg(part = "header", bg = "#61223b") %>%
+  color(part = "header", color = "white") %>%
+  fontsize(size = 14, part = "all") %>%
+  autofit() %>%
+  fit_to_width(max_width = 8) %>% 
+  set_table_properties(align = "center")
+```
+
+### Recommendations
+
+Lastly, I finish with my recommendations based on my findings:
+
+- Recommendation 1: if just one type of coffee is to be stocked, I would recommend this coffee:
+
+  - Medium-Light roast: Karen J Kona Red Bourbon, roasted by Hula Daddy Kona Coffee
+  - It has the best value for money
+  - It is both inexpensive and highly rated
+
+- Recommendation 2: if the goal is to supply a range of coffee roasts, I would recommend the following combination:
+
+  - A medium roast: Espresso Blend
+  - A medium-dark roast: 100% Guatemalan
+  - And a medium-light roast: Karen J Kona Red Bourbon
+
+- Recommendation 3: if the goal is to supply a range of coffee roasts and there is an advantage from importing them all from the same country, I would recommend the following roasts from Hawai'i:
+
+  - Light roast: Ethiopia Yirgacheffe G1
+  - Medium roast: Medium-Dark Roast
+  - And medium-light roast: Karen J Kona Red Bourbon
+
+I used a plot to create slide headings/ sections in my slide show
+
+```{r, fig.width=10, fig.height=5.6, out.width="100%"}
+library(ggplot2)
+
+ggplot() +
+  annotate("text",
+           x = 0.5,
+           y = 0.57,
+           label = "Recommendations",
+           size = 12,
+           fontface = "bold",
+           colour = "#61223B") +
+  annotate("text",
+           x = 0.5,
+           y = 0.43,
+           label = "Best coffees to stock",
+           size = 6,
+           colour = "grey35") +
+  xlim(0, 1) +
+  ylim(0, 1) +
+  theme_void()
+```
 
 
-4. Best price-ranking combination including a variety of roasts from the same loc_country
-4. Best price-ranking combination including a variety of roasts from the same roaster
 
-1. Cheapest coffee available & descriptive words
-2. Highest ranking coffee available & descriptive words
-3. Best price-ranking combination & descriptive words
-4. Best price-ranking combination including a variety of roasts & descriptive words
+## Question 2: Baby Names
+
+I first start by loading the data and the functions required for this question.
+
+```{r}
+# load data and code scripts
+state_baby_names <- readRDS(here::here("data", "US_Baby_names", "Baby_Names_By_US_State.rds"))
+song_charts <- readRDS(here::here("data", "US_Baby_names", "charts.rds"))
+hbo_credits <- readRDS(here::here("data", "US_Baby_names", "HBO_credits.rds"))
+hbo_titles <- readRDS(here::here("data", "US_Baby_names", "HBO_titles.rds"))
+```
+
+```{r}
+list.files('25051911_Question_2/code/', full.names = T, recursive = T) %>% as.list() %>% walk(~source(.))
+```
+
+### Spearman Correlation
+
+After researching some additional context and meaning of the Spearman Correlation, I calculate it between each year’s 25 most popular boys’ and girls’ names
+and that of the next 3 years. I plot it as 3 line graphs, plotted separately for male names and female names.
+
+#### Preparing the data and calculating the Spearman Correlation
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+baby_names_national <- Create_National_Dataset(state_baby_names)
+
+rank_corr_df <- Name_Rank_Correlation(baby_names_national, top_n_names = 25, max_lead = 3)
+```
+
+#### Plotting the Spearman Correlation for female names
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+Rank_Corr_Graph(rank_corr_df, "F")
+```
+
+The graph shows that the top 25 female names are very persistent for the time period analysed. For most of the years, the Spearman rank correlation is between 0.8 and 1, except for between 1960 and 1970, around 1985 and around 2005. Therefore, if a female name is in the top 25, then there is a very high probability that it will be in the top 25 in the following year as well as the year after that. According to this graph, it appears that female names are no more or less likely to persist since the 1990s compared to earlier years; the pattern does not appear to change significantly from the 1990s.
+
+#### Plotting the Spearman Correlation for male names
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+Rank_Corr_Graph(rank_corr_df, "M")
+```
+
+The graph shows that the top 25 male names are very persistent for the time period analysed. Before 1965, the Spearman rank correlation remains between 0.85 and 1, however, the range significantly increases and the consistency decreases after 1965. This indicates that male names were initially quite persistent, but that persistence has decreased significantly since 1965. Therefore, the probability of a male name remaining in the top 25 male names began very high, but in more recent years, that probability has become smaller. From this graph, it appears that male names are less persistent since the 1990s than prior to that - popular names have become a bit slower to persist since the 1990s.
+
+### Spearman Correlation by Decade
+
+I now do the same thing as above, but this time calculate the Spearman correlation for popular names by decade.
+
+```{r}
+decade_corr <- Name_Decade_Rank_Correlation(
+  df = baby_names_national,
+  top_n_names = 25,
+  max_lead_decades = 3
+)
+```
+
+#### Spearman Correlation by Decade for Female Names
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+Decade_Corr_Plot(decade_corr, "F")
+```
+
+The same trends are apparent when looking at popular female names by decade - according to this graph, it appears that female names are no more or less likely to persist since the 1990s compared to earlier years; the pattern does not appear to change significantly from the 1990s.
+
+#### Spearman Correlation by Decade for Male Names
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+Decade_Corr_Plot(decade_corr, "M")
+```
+
+Once again, this graph shows similar trends to the yearly popular make names graph above. From this graph, it appears that male names are less persistent since the 1990s than prior to that - popular names have become a bit slower to persist since the 1990s.
+
+### Name Surges
+
+I created a table showing the top 10 female names and top 10 male names that had the largest year-to-year percentage rank improvement. I limited the ranking to names that had more than 100 counts in the previous period, so that large increases in relatively unpopular names are not captured.
+
+```{r}
+name_surges <- Yr_on_yr_Surges(baby_names_national)
+```
+
+```{r}
+Top_Surges_Table(name_surges)
+```
+
+#### Names Surge and TV Shows/ Movies
+
+First, I merged the HBO_titles dataset with the HBO_credits dataset. I then matched the character names to the national baby name dataset I created earlier. I then plotted, of the top 25 male and female names, the names that were also names of TV show or movie characters in a bubble plot. In the bubble plot, the size of the bubbles represent the number of babies with a particular name, while the size of the stars indicate the tmdb popularity score of the TV show/ movie. The plots are separate by gender and show the persistence and popularity of names, and how said persistence and popularity interacts with TV show/ movie character names.
+
+```{r}
+credits_with_titles <-
+  Merge_Credits_Titles(
+    credits = hbo_credits,
+    titles = hbo_titles
+  )
+```
+
+
+```{r}
+matched_characters <-
+  Match_Top_Surge_Characters(
+    credits = credits_with_titles,
+    df_names = baby_names_national,
+    top_n = 25
+  )
+```
+
+
+```{r}
+name_media_plots <-
+  Name_Media_Spike_Plots_Separate(
+    df_names = baby_names_national,
+    matched_characters = matched_characters,
+    top_n = 25,
+    time_unit = "year",
+    max_year = 2014
+  )
+```
+
+
+##### Male Names
+
+The plot below shows how the popularity and persistence of male names interacts with character names of TV show or movie characters. The male names chosen are the 20 male names that experienced the largest percentage rank improvement. These names were then merged with character names.
+
+```{r, fig.width=12, fig.height=12, out.width="100%"}
+name_media_plots$M
+```
+
+As seen from the plot above, there is not a clear pattern between the popularity or persistence of names and character names from TV shows/ movies for these particular male names. However, it is interesting to observe how these variables develop and interact over time. Also, for most of these names, their popularity has been increasing over time. This makes them an excellent choice for a toy company, because their popularity is increasing, and increasing regardless of popular character names. It is clear that some names are classics - Christopher, Michael and Ryan remain persistently popular, regardless of whether TV show or movie characters have these names. These names are also the names of characters in many TV shows/ movies. Therefore, for a toy company, these names are good to take note of, because they are unlikely to change significantly in popularity over time, meaning they are a lower-risk investment.
+
+
+##### Female Names
+
+The plot below shows how the popularity and persistence of female names interacts with character names of TV show or movie characters. The female names chosen are the 20 female names that experienced the largest percentage rank improvement. These names were then merged with character names.
+
+```{r, fig.width=12, fig.height=12, out.width="100%"}
+name_media_plots$F
+```
+
+As seen from the plot above, there is not a clear pattern between the popularity or persistence of names and character names from TV shows/ movies for these particular female names. However, it is interesting to observe how these variables develop and interact over time. It is clear that some names are classics - Michelle, Kayla, Ashley, Jenna and Jamie remain persistently popular, regardless of whether TV show or movie characters have these names. Therefore, for a toy company, these names are good to take note of, because they are unlikely to change significantly in popularity over time, meaning they are a lower-risk investment.
 
 
 
+## Question 3: Loans and Credit
+
+Assist in understanding predictors of loan defaults and efficacy of Lending Club's customer grading system which used to predict whether client would likely default on loans or not.
+
+I first start by loading the data and the functions required for this question.
+
+### Cleaning data and defining who counts as default
+
+Current and Fully Paid are treated as non-defaulter
+Charged off/ default/ late (31-120 days) treated as defaulters
+
+```{r}
+# load data 
+loans_clean <- Data_Clean(
+  df = readRDS(here::here("data", "Loan_Cred", "loan_data.rds"))
+)
+```
+
+```{r}
+# load code scripts
+list.files('25051911_Question_3/code/', full.names = T, recursive = T) %>% as.list() %>% walk(~source(.))
+```
 
 
+### Default Profile Summary Statistics
+
+#### Default Rate by Grade
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+default_by(loans_clean, grade)
+```
+
+It is clear from the graph that as credit grade goes from A to G, the default rate increases exponentially. Therefore, grade is highly associated with the default rate (although that is how it is designed).
+
+#### Default Rate by Term of Loan
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+default_by(loans_clean, term)
+```
+
+There is a small difference in the default rate based on the length of the loan, with the longer loan having a slightly higher default rate.
+
+#### Default Rate by Length of Employment
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+default_by(loans_clean, emp_length)
+```
+
+There is not a substantial difference in the default rate based on the length of employment, except for those who have n/a for length of employment - they have a much higher default rate. This is logical, because those who answered n/a to length of employment are most likely not working/ unemployed. Thus, they probably have a less stable income, which would make their default rate higher.
+
+#### Default Rate by State
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+default_by(loans_clean, addr_state)
+```
+
+There is no obvious outlier in the default rate based on US state, however, the difference in default rate between the state with the highest default rate (Alabama) and the state with the lowest default rate (West Virginia) is substantial. Texas has a default rate on the higher side, however, it is not obviously different from any of the other states.
+
+#### Default Rate by State for Short Term Loans
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+loans_clean_sr <- loans_clean %>% 
+  filter(str_trim(term) == "36 months")
+default_by(loans_clean_sr, addr_state)
+```
+
+There is no obvious outlier in the default rate based on US state for short term loans, however, the difference in default rate between the state with the highest default rate (Alabama) and the state with the lowest default rate (West Virginia) is substantial. Texas has a default rate on the higher side, however, it is not obviously different from any of the other states.
+
+#### Default Rate by DTI Band
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+default_by(loans_clean, dti_band)
+```
+
+The default rate for different bands of the debt-to-income ratio follows an expected pattern. The default rate is lower for a lower debt-to-income ratio, and the default rate is higher for a higher debt-to-income ratio. 
+
+#### Default Rate by Purpose of Loan
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+default_by(loans_clean, purpose)
+```
+
+The default rate differs a bit based on the purpose of the loan. Loans for paying off credit cards or buying cars have the lowest default rate, while loans for weddings and small businesses have the highest default rate. It is logical that loans for small businesses have the highest default rate, since small businesses often carry a higher investment risk, and have unpredictable profits (and often low/ no initial profits). 
 
 
+### Default Rate, Credit Grades and Young Individuals
+
+Unfortunately, there is no age variable in the data. Therefore, as a very rough, imperfect proxy for age, I use length of employment. I classify young individuals as those with a length of employment of 5 years or less. Then, to determine whether credit grades are a good indicator for whether younger individuals will default on their loans, I regress the default rate on credit grade, restricting the sample to younger individuals only. The table below shows the results of the regression.
+
+```{r}
+model <- loans_clean %>%
+  filter(emp_length %in% c("< 1 year", "1 year", "2 years", "3 years", "4 years", "5 years")) %>%
+  lm(default ~ factor(grade), data = .)
+
+summary(model)
+```
+
+```{r}
+Model_Table(model)
+```
+
+
+As seen in the regression table above, credit grade is a somewhat good indicator of whether younger individuals will default. This is because all the coefficients are statistically significant with an economically-meaningful magnitude, however, the R-squared value is quite low at 0.04928, meaning there are many other factors that influence the default rate of young individuals.
+
+
+### Interest Rates, Age, Occupation and Credit Scores
+
+I created 11 different occupation groups. I used AI to get the initial key words, then kept going back to the data to look for more to add. It was a very time consuming process (and I definitely spent way too much time on it).
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+loans_clean <- loans_clean %>%
+  Create_Job_Groups()
+```
+
+Using employment length as an imperfect, rough proxy for age once again and using very rough occupation categories, I regress interest rate on employment length, occupation and credit score to determine whether interest rates are determined by these factors. The results are displayed below.
+
+```{r}
+library(fixest)
+
+model_2 <- feols(
+  int_rate ~ 1 | grade + emp_length + emp_title_clean,
+  data = loans_clean
+)
+```
+
+```{r}
+summary(model_2)
+```
+
+With an R-squared value of 0.926009, it is clear that interest rates are strongly associated with age, occupation and credit scores.
+
+
+### Risk Profiles
+
+The table below shows the top 10 combinations of credit grade, DTI band, purpose of loan and type of home ownership that have the highest default rates. 
+
+```{r}
+Risk_Profiles_df(loans_clean)
+```
+
+From the table above, we can see that the highest defaulters are individuals with credit grades of either F or G, a DTI that is greater than 25 and who rent their homes. The median income for each group is between 50000 and 60000 US dollars.
+
+When lenders assess borrower credibility, they can do a number of things to reduce default risk. They can identify those borrowers who are part of the highest default risk combination categories and either reduce the loan amount to these borrowers, or have additional checks and balances before approving the loan. Instead of just focusing on one category or "tick-box" at a time, lenders now have a better, fuller picture of the default risk of the borrower. A borderline answer for one or two categories could be viewed as okay when each category is viewed in isolation, but could paint a much riskier picture when categories are viewed together.
+
+### DTI Cap
+
+The table below shows how the share of loans accepted and default rate would change, if there was a DTI cap imposed.
+
+```{r}
+DTI_Cap_Table(loans_clean)
+```
+
+As seen in the table above, as the DTI cap increases, both the share accepted and default rate increase. Therefore, there is a trade-off between the risk of default and maximising the number of borrowers. A DTI cap that is too strict will cause the number of borrowers to decline significantly, however, it would also have the positive effect of reducing the default rate. The same goes for a DTI cap that is too lenient - the number of borrowers will increase, but at the cost of the default rate increasing as well. I think an appropriate hard-cap for DTI levels is 25. At 25, approximately 75% of borrowers are accepted, which is not too low, and the default rate is at 9%, which is an improvement compared to no DTI cap.
+
+
+## Question 4: Netflix
+
+### Loading the data and functions
+
+```{r}
+# load data and code scripts
+
+credits <- readRDS(here::here("data", "netflix", "credits.rds"))
+netflix_movies <- read_csv(here::here("data", "netflix", "netflix_movies.csv"))
+titles <- readRDS(here::here("data", "netflix", "titles.rds"))
+
+```
+
+```{r}
+list.files('25051911_Question_4/code/', full.names = T, recursive = T) %>% as.list() %>% walk(~source(.))
+```
+
+Separating content with multiple countries into multiple rows (long format)
+
+```{r}
+df_countries_long <- Countries_Long(titles)
+```
+
+
+## Summary of the Top 10 Netflix Content-Producing Countries
+
+```{r}
+Netflix_Country_Content_Bar(df_countries_long)
+```
+
+As seen in the graph above, the US produces by far the most content for Netflix. The next two highest countries are India and Great Britain.
+
+## Relationship Between Movie TMDB Score and Runtime
+
+The scatter plot below shows the relationship between TMDB score and runtime, by genre. As shown by the graph below, there is a very weak relationship between TMDB score and runtime. Interestingly, though, comedies, documentations and dramas have a somewhat similar TMDB score, but the runtime for comedies and documentations is, on average, shorter than the runtime of dramas. Romances and thrillers tend to have lower scores than the aforementioned genres.
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+Netflix_TMDB_Scatter_Movies(
+  titles,
+  x_var = "runtime"
+)
+```
+
+## Average TMDB Popularity of movies over time by genre and country
+
+The graphs below plot the average TMDB popularity by genre and country over time. The countries that produce the most Netflix movies are plotted (individually) and only the top 6 genres per country are included.
+
+### US
+
+As seen in the graph below, the top 6 genres for production in the US are: comedy, drama, romance, documentation, horror and thriller. The popularity of dramas and thrillers has increased exponentially since 2020. Therefore, it would be a good decision to focus on streaming dramas and thrillers produced in the US.
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+Plot_Movie_Genre_Popularity(
+  df = titles,
+  Country = "US",
+  country_col = "production_countries",
+  genre_col = "genres",
+  year_col = "release_year",
+  popularity_col = "tmdb_popularity",
+  type_col = "type",
+  movie_value = "MOVIE",
+  top_n_genres = 6
+)
+```
+
+### India
+
+As seen in the graph below, the top 6 genres for production in India are: comedy, drama, romance, action, crime and thriller. The popularity of actions and comedies has increased exponentially since the late 2010s. Therefore, it would be a good decision to focus on streaming actions and comedies produced in India.
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+Plot_Movie_Genre_Popularity(
+  df = titles,
+  Country = "IN",
+  country_col = "production_countries",
+  genre_col = "genres",
+  year_col = "release_year",
+  popularity_col = "tmdb_popularity",
+  type_col = "type",
+  movie_value = "MOVIE",
+  top_n_genres = 6
+)
+```
+
+### Great Britain
+
+As seen in the graph below, the top 6 genres for production in Great Britain are: comedy, drama, romance, action, documentation and thriller. The popularity of actions and documentations has increased slightly since 2020. Therefore, it would be a good decision to focus on streaming actions and documentations produced in Great Britain. I would be hesitant to focus on streaming thrillers from Great Britain because, despite increasing exponentially in 2020, their popularity appears to be on a heavy downward trend, so it woud be a riskier investment.
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+Plot_Movie_Genre_Popularity(
+  df = titles,
+  Country = "GB",
+  country_col = "production_countries",
+  genre_col = "genres",
+  year_col = "release_year",
+  popularity_col = "tmdb_popularity",
+  type_col = "type",
+  movie_value = "MOVIE",
+  top_n_genres = 6
+)
+```
+
+### France
+
+As seen in the graph below, the top 6 genres for production in France are: comedy, drama, documentation, action, crime and thriller. The popularity of thrillers and crime has increased exponentially since 2020. Therefore, it would be a good decision to focus on streaming thrillers and crime produced in France.
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+Plot_Movie_Genre_Popularity(
+  df = titles,
+  Country = "FR",
+  country_col = "production_countries",
+  genre_col = "genres",
+  year_col = "release_year",
+  popularity_col = "tmdb_popularity",
+  type_col = "type",
+  movie_value = "MOVIE",
+  top_n_genres = 6
+)
+```
+
+### Canada
+
+As seen in the graph below, the top 6 genres for production in Canada are: animation, documentation, fantasy, comedy, drama and thriller. The popularity of fantasies, comedies and dramas have increased exponentially since the late 2010s. Therefore, it would be a good decision to focus on streaming fantasies, comedies and dramas produced in Canada.
+
+```{r, fig.width=12, fig.height=6, out.width="100%"}
+Plot_Movie_Genre_Popularity(
+  df = titles,
+  Country = "CA",
+  country_col = "production_countries",
+  genre_col = "genres",
+  year_col = "release_year",
+  popularity_col = "tmdb_popularity",
+  type_col = "type",
+  movie_value = "MOVIE",
+  top_n_genres = 6
+)
+```
+
+### Overall Recommendations
+
+Therefore, my advice would be to invest in streaming the following genres of movies produced in the following countries:
+
+- Drama: US
+- Thriller: France (and maybe the US as well)
+- Comedy: India
+- Action: India (and maybe Great Britain as well)
+- Documentation: France
+- Fantasy: Canada
+- Drama: Canada
+
+I would start off being a bit cautious of streaming movies that have the genres because there is no obvious upward trend in any of the countries analysed:
+
+ - Animation
+ - Romance
+ 
 
 
 

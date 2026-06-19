@@ -15,5 +15,5 @@ git push -u origin main
 # push throughout exam
 git status
 git add .
-git commit -m "Update question 1"
+git commit -m "Update question 1 (q1 push 1; semi-done)"
 git push

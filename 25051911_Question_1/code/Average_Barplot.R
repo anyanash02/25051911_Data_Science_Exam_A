@@ -43,12 +43,20 @@ Average_Barplot <- function(df,
                y = Average,
                fill = .data[[Group]])) +
     geom_col(show.legend = FALSE) +
+    geom_col(fill = "#61223b") +
+    theme_minimal(base_size = 12) +
+    theme(
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.text.x = element_text(angle = 45, hjust = 1)
+    ) +
     geom_text(aes(y = Average / 2,
-                  label = round(Average, 2)),
+                  label = round(Average, 1)),
+              colour = "white",
+              fontface = "bold",
               hjust = 0.5,
               vjust = 0.5,
-              size = 3.5) +
-    theme_bw() +
+              size = 4.5) +
     labs(
       title = paste(metric_label, "by", group_label),
       x = group_label,

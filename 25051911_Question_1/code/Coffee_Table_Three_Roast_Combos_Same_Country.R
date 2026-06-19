@@ -71,8 +71,6 @@ Coffee_Table_Three_Roast_Combos_Same_Country <- function(df_clean,
       tibble(
         Roast_Combination = paste(roast_labels, collapse = " + "),
         loc_country = country_name,
-        Avg_Cost = best_combo$Avg_Cost,
-        Avg_Rating = best_combo$Avg_Rating,
         Avg_Value_Score = best_combo$Avg_Value_Score,
         
         Coffee_1 = d1$name[best_combo$id1],
@@ -92,12 +90,10 @@ Coffee_Table_Three_Roast_Combos_Same_Country <- function(df_clean,
   table_out <-
     all_country_combos %>%
     group_by(Roast_Combination) %>%
-    arrange(desc(Avg_Value_Score), Avg_Cost) %>%
+    arrange(desc(Avg_Value_Score)) %>%
     slice(1) %>%
     ungroup() %>%
     mutate(
-      Avg_Cost = round(Avg_Cost, 2),
-      Avg_Rating = round(Avg_Rating, 2),
       Avg_Value_Score = round(Avg_Value_Score, 2)
     ) %>%
     arrange(desc(Avg_Value_Score)) %>% 
